@@ -7,6 +7,7 @@ class UsersController < ApplicationController
     @user = User.new(user_params)
     @user.roles << Role.find_by(name: "employee")
     if @user.save
+      UserMailer.welcome_email(@user).deliver_later
       render json: { message: "User created successfully" }, status: :created
     else
       render json: { error: "Failed to create user" }, status: :unprocessable_entity

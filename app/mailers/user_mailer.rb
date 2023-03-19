@@ -1,6 +1,9 @@
 class UserMailer < ApplicationMailer
-  def new_employee_email
-    @employee = params[:employee]
-    mail(to: @employee.email, subject: "Your new account details")
+  default from: "no-reply@my_api.com"
+
+  def welcome_email(user)
+    @user = user
+    @url = "https://my_api.com/login"
+    mail(to: @user.email, subject: "Welcome to My API")
   end
 end
