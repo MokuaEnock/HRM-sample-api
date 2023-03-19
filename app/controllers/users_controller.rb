@@ -9,4 +9,10 @@ class UsersController < ApplicationController
       render json: @employee.errors, status: :unprocessible_entity
     end
   end
+
+  private
+
+  def user_params
+    params.require(:user).permit(:name, :email, :password)
+  end
 end
