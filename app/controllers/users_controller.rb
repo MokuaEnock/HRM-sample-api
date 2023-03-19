@@ -1,12 +1,23 @@
 class UsersController < ApplicationController
-  def create_employee
-    @employer = Employer.find(params[:employer_id])
-    @employee = @employer.employees.create(user_params)
-    if @employee.save
-      UserMailer.with(employer: employee).new_employee_email.deliver_now
-      render json: { employee: @employee, status: :created }
+  include Authenticatable
+
+  before_action :authenticate_user!, except: [:create]
+
+  def create
+    @user = User.new(user_params)
+    @user.roles << Role.find_by(name: "employee")
+    if @user.save
+      render json: { message: "User created successfully" }, status: :created
     else
-      render json: @employee.errors, status: :unprocessible_entity
+      render json: { error: "Failed to create user" }, status: :unprocessable_entity
+    end
+  end
+
+  def index
+    if current_user.has_role?(:admin)
+      render json: { users: User.all }
+    else
+      render json: { error: "You do not have permission to do that" }, status: :forbidden
     end
   end
 
